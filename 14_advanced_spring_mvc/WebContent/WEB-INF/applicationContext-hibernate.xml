@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+<!-- 	///////////////////////////////Configuration des annotations Service et Repository/////////////////////////////// -->
+<!-- 	1. Activer la détection des annotations (@Autowired) -->
+	<context:annotation-config/>
+	
+<!-- 	2. Activer la détection automatique des beans en scanant le contenu du package : com.intiformation.springmvc-->
+	<context:component-scan base-package="com.intiformation.springmvc"/>
+	
+<!-- 	3. Activer la gestion déclarative des transactions @Transactional -->
+	<tx:annotation-driven transaction-manager="transactionManagerBean"/>
+	
+	
+<!-- 	///////////////////////////////Déclaration d'un gestionnaire de transactions/////////////////////////////// -->
+	<bean id="transactionManagerBean" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactoryBean"/>
+	</bean>
+	
+
+<!-- 	///////////////////////////////Déclaration de la sessionFactory/////////////////////////////// -->
+	<bean id="sessionFactoryBean" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+<!-- 		Injection de la datasource dans la sessionFactory -->
+		<property name="dataSource" ref="dataSourceBean"/>
+		
+<!-- 		Définition des propriétés d'hibernate -->
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${jdbc.hibernate.dialect}</prop>
+				<prop key="hibernate.show_sql">${jdbc.hibernate.show_sql}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${jdbc.hibernate.hbm2ddl}</prop>
+			</props>
+		</property>
+		
+<!-- 	///////////////////////////////Déclaration des classes annotées : Mapping/////////////////////////////// -->
+		<property name="annotatedClasses">
+			<list>
+				<value>com.intiformation.springmvc.entity.Fonctionnaire</value>
+			</list>
+		</property>
+	</bean>
+	
+</beans>
